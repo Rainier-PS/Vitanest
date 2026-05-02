@@ -38,14 +38,14 @@
       --card-hover: #1c1c26;
       --tag-bg: rgba(255, 255, 255, 0.05);
 
-      --orb-a: rgba(139, 92, 246, 0.18);
-      --orb-b: rgba(59, 130, 246, 0.14);
-      --orb-c: rgba(236, 72, 153, 0.10);
+      --orb-a: rgba(53, 176, 72, 0.15);
+      --orb-b: rgba(0, 84, 166, 0.15);
+      --orb-c: rgba(26, 130, 119, 0.12);
 
       --sb-track: rgba(255, 255, 255, 0.06);
-      --sb-thumb-start: #8b5cf6;
-      --sb-thumb-mid: #3b82f6;
-      --sb-thumb-end: #ec4899;
+      --sb-thumb-start: #35b048;
+      --sb-thumb-mid: #1a8277;
+      --sb-thumb-end: #0054a6;
 
       --nav-island-bg: rgba(20, 20, 26, 0.85);
       --nav-full-bg: rgba(10, 10, 13, 0.0);
@@ -68,9 +68,9 @@
       --card-bg: #ffffff;
       --card-hover: #f2f2f8;
       --tag-bg: rgba(0, 0, 0, 0.05);
-      --orb-a: rgba(139, 92, 246, 0.10);
-      --orb-b: rgba(59, 130, 246, 0.08);
-      --orb-c: rgba(236, 72, 153, 0.07);
+      --orb-a: rgba(53, 176, 72, 0.10);
+      --orb-b: rgba(0, 84, 166, 0.08);
+      --orb-c: rgba(26, 130, 119, 0.07);
       --sb-track: rgba(0, 0, 0, 0.06);
       --nav-island-bg: rgba(255, 255, 255, 0.88);
       --nav-full-bg: rgba(244, 244, 248, 0.0);
@@ -116,6 +116,7 @@
         height: 3px;
         border-radius: 0;
       }
+
       .custom-scrollbar-thumb {
         height: 100% !important;
         width: var(--sb-stop, 0%);
@@ -147,12 +148,35 @@
       line-height: 1.6;
       overflow-x: hidden;
       transition: background-color 0.4s ease, color 0.4s ease;
-      cursor: none;
     }
 
-    @media (hover: none) and (pointer: coarse) {
-      body {
+    body.custom-cursor-enabled {
+      cursor: none !important;
+    }
+
+    body.custom-cursor-enabled a,
+    body.custom-cursor-enabled button,
+    body.custom-cursor-enabled .project-card,
+    body.custom-cursor-enabled .expertise-card,
+    body.custom-cursor-enabled .theme-toggle,
+    body.custom-cursor-enabled .accordion-header,
+    body.custom-cursor-enabled .nav-menu-btn {
+      cursor: none !important;
+    }
+
+    @media (max-width: 767px) {
+      body.custom-cursor-enabled {
         cursor: auto !important;
+      }
+
+      a,
+      button,
+      .project-card,
+      .expertise-card,
+      .theme-toggle,
+      .accordion-header,
+      .nav-menu-btn {
+        cursor: pointer !important;
       }
 
       #cursor,
@@ -160,11 +184,18 @@
         display: none !important;
       }
 
-      a,
-      button,
-      .project-card,
-      .expertise-card {
-        cursor: pointer !important;
+      .desktop-logo-frame {
+        display: none !important;
+      }
+
+      .mobile-logo-frame {
+        display: flex !important;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .mobile-logo-frame {
+        display: none !important;
       }
     }
 
@@ -181,7 +212,6 @@
     button {
       border: none;
       background: none;
-      cursor: none;
       font-family: inherit;
     }
 
@@ -209,14 +239,15 @@
       left: 0;
       width: 10px;
       height: 10px;
-      background: var(--text);
+      background: #fff;
       border-radius: 50%;
       pointer-events: none;
-      z-index: 9999;
+      z-index: 99999;
       transform: translate(-50%, -50%);
       transition: width 0.2s, height 0.2s, border-radius 0.2s, opacity 0.2s;
       mix-blend-mode: difference;
       will-change: transform;
+      display: none;
     }
 
     #cursor-ring {
@@ -228,12 +259,193 @@
       border: 1.5px solid rgba(255, 255, 255, 0.35);
       border-radius: 50%;
       pointer-events: none;
-      z-index: 9998;
+      z-index: 99998;
       transform: translate(-50%, -50%);
       transition: width 0.35s cubic-bezier(.23, 1, .32, 1),
         height 0.35s cubic-bezier(.23, 1, .32, 1),
         opacity 0.3s, border-color 0.3s;
       will-change: transform;
+      display: none;
+    }
+
+    body.custom-cursor-enabled #cursor,
+    body.custom-cursor-enabled #cursor-ring {
+      display: block;
+    }
+
+    [data-theme="light"] body.custom-cursor-enabled #cursor-ring {
+      border-color: rgba(0, 0, 0, 0.35);
+    }
+
+    .settings-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .settings-overlay.open {
+      pointer-events: auto;
+      opacity: 1;
+    }
+
+    .settings-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .settings-panel {
+      position: relative;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      width: 90%;
+      max-width: 400px;
+      padding: 32px;
+      transform: translateY(20px);
+      transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .settings-overlay.open .settings-panel {
+      transform: translateY(0);
+    }
+
+    .settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .settings-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .settings-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: color 0.2s, background 0.2s, border-color 0.2s;
+    }
+
+    .settings-close:hover {
+      color: var(--text);
+      border-color: var(--border-hover);
+      background: var(--card-hover);
+    }
+
+    .settings-close svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .settings-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .settings-option:last-child {
+      border-bottom: none;
+    }
+
+    .settings-option-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .settings-option-title {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .settings-option-desc {
+      font-size: 0.8rem;
+      color: var(--text-faint);
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      transition: .4s;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: var(--text-muted);
+      border-radius: 50%;
+      transition: .4s;
+    }
+
+    .toggle-switch input:checked+.toggle-slider {
+      background-color: var(--sb-thumb-start);
+      border-color: var(--sb-thumb-start);
+    }
+
+    .toggle-switch input:checked+.toggle-slider:before {
+      transform: translateX(20px);
+      background-color: #fff;
+    }
+
+    body.reduce-motion .reveal,
+    body.reduce-motion .stagger>*,
+    body.reduce-motion .hero-label,
+    body.reduce-motion .hero-title,
+    body.reduce-motion .hero-sub-wrap,
+    body.reduce-motion .hero-body,
+    body.reduce-motion .hero-links {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+
+    body.reduce-motion .gradient-orb {
+      animation: none !important;
+      transform: none !important;
     }
 
     body.cursor-link #cursor {
@@ -344,6 +556,7 @@
     }
 
     .nav-inner {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -424,7 +637,6 @@
       justify-content: center;
       color: var(--text-muted);
       transition: border-color 0.2s, color 0.2s, background 0.2s;
-      cursor: none;
     }
 
     @media (hover: none) and (pointer: coarse) {
@@ -465,7 +677,6 @@
       flex-direction: column;
       gap: 5px;
       width: 28px;
-      cursor: none;
       padding: 4px;
     }
 
@@ -480,7 +691,7 @@
       height: 1.5px;
       background: var(--text);
       border-radius: 2px;
-      transition: transform 0.3s, opacity 0.3s;
+      transition: opacity 0.3s, background 0.3s;
     }
 
     @media (max-width: 768px) {
@@ -495,36 +706,34 @@
       #navbar.menu-open .nav-links {
         display: flex;
         flex-direction: column;
-        position: fixed;
-        top: 0;
+        position: absolute;
+        top: 100%;
         left: 0;
         right: 0;
-        bottom: 0;
-        background: var(--bg);
-        padding: 100px 28px 40px;
-        gap: 8px;
-        z-index: -1;
+        background: var(--nav-island-bg);
+        backdrop-filter: blur(20px) saturate(1.6);
+        -webkit-backdrop-filter: blur(20px) saturate(1.6);
+        border: 1px solid var(--border-hover);
+        border-radius: 20px;
+        padding: 16px;
+        margin-top: 12px;
+        gap: 4px;
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.22);
+        z-index: 100;
+        max-height: 70vh;
         overflow-y: auto;
       }
 
       #navbar.menu-open .nav-links li a {
-        font-size: 1.5rem;
+        font-size: 1rem;
         font-weight: 500;
-        padding: 12px 0;
-        border-radius: 0;
-        border-bottom: 1px solid var(--border);
+        padding: 10px 16px;
+        border-radius: 12px;
+        border-bottom: none;
       }
 
-      #navbar.menu-open .nav-menu-btn span:nth-child(1) {
-        transform: rotate(45deg) translate(5px, 5px);
-      }
-
-      #navbar.menu-open .nav-menu-btn span:nth-child(2) {
-        opacity: 0;
-      }
-
-      #navbar.menu-open .nav-menu-btn span:nth-child(3) {
-        transform: rotate(-45deg) translate(6px, -6px);
+      #navbar.menu-open .nav-menu-btn span {
+        background: var(--sb-thumb-start);
       }
     }
 
@@ -653,15 +862,10 @@
       font-weight: 500;
       color: var(--bg);
       background: var(--text);
-      padding: 10px 22px;
+      border: 1px solid var(--text);
+      padding: 9px 21px;
       border-radius: 14px;
-      transition: opacity 0.2s, transform 0.2s;
       margin-left: auto;
-    }
-
-    .hero-cta:hover {
-      opacity: 0.82;
-      transform: translateX(2px);
     }
 
     .hero-cta svg {
@@ -1057,45 +1261,11 @@
       border: 1px solid var(--border);
       padding: 11px 26px;
       border-radius: 14px;
-      transition: background 0.2s, border-color 0.2s, transform 0.2s;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .btn-outline::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--text);
-      transform: translateY(100%);
-      transition: transform 0.38s cubic-bezier(.23, 1, .32, 1);
-      z-index: 0;
-    }
-
-    .btn-outline:hover::before {
-      transform: translateY(0);
-    }
-
-    .btn-outline span,
-    .btn-outline svg {
-      position: relative;
-      z-index: 1;
-      transition: color 0.38s;
-    }
-
-    .btn-outline:hover span,
-    .btn-outline:hover svg {
-      color: var(--bg);
     }
 
     .btn-outline svg {
       width: 14px;
       height: 14px;
-    }
-
-    .btn-outline:hover {
-      transform: translateY(-1px);
-      border-color: var(--text);
     }
 
     #expertise {
@@ -1459,16 +1629,11 @@
       font-weight: 500;
       color: var(--bg);
       background: var(--text);
-      padding: 16px 32px;
+      border: 1px solid var(--text);
+      padding: 15px 31px;
       border-radius: 16px;
-      transition: opacity 0.2s, transform 0.2s;
       white-space: nowrap;
       flex-shrink: 0;
-    }
-
-    .cta-link:hover {
-      opacity: 0.82;
-      transform: scale(0.97);
     }
 
     .cta-link svg {
@@ -1482,6 +1647,84 @@
         justify-content: center;
       }
     }
+
+    /* --- Shared Fluid Button Hover Animation --- */
+    .btn-outline,
+    .hero-cta,
+    .cta-link {
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      transform: translateZ(0);
+      transition: transform 0.65s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.65s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .btn-outline::before,
+    .hero-cta::before,
+    .cta-link::before {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: -25%;
+      width: 150%;
+      height: 250%;
+      border-radius: 50% 50% 0 0;
+      transform: translateY(0);
+      transition: transform 0.65s cubic-bezier(0.23, 1, 0.32, 1);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .btn-outline::before {
+      background: var(--text);
+    }
+
+    .hero-cta::before,
+    .cta-link::before {
+      background: var(--bg);
+    }
+
+    .btn-outline:hover::before,
+    .hero-cta:hover::before,
+    .cta-link:hover::before {
+      transform: translateY(-75%);
+    }
+
+    .btn-outline span,
+    .btn-outline svg,
+    .hero-cta span,
+    .hero-cta svg,
+    .cta-link span,
+    .cta-link svg {
+      position: relative;
+      z-index: 1;
+      transition: color 0.4s ease, transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .btn-outline:hover span,
+    .btn-outline:hover svg {
+      color: var(--bg);
+    }
+
+    .hero-cta:hover span,
+    .hero-cta:hover svg,
+    .cta-link:hover span,
+    .cta-link:hover svg {
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      transform: translateY(-3px) translateZ(0);
+      box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-cta:hover,
+    .cta-link:hover {
+      transform: translateY(-3px) translateZ(0);
+      box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ------------------------------------------ */
 
     footer {
       padding: 28px 0;
@@ -1573,59 +1816,136 @@
       background: #3b82f6;
     }
 
-    .reveal {
+    /* View Transitions for Theme Toggle */
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation: none;
+      mix-blend-mode: normal;
+    }
+
+    /* Ecosystem Accordion Layout */
+    .ecosystem-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-top: 40px;
+    }
+
+    @media (max-width: 900px) {
+      .ecosystem-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .ecosystem-accordion {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .accordion-item {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--card-bg);
+      overflow: hidden;
+      transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
+    }
+
+    .accordion-item:hover {
+      border-color: var(--border-hover);
+    }
+
+    .accordion-item.active {
+      border-color: var(--sb-thumb-mid);
+      background: rgba(26, 130, 119, 0.05);
+    }
+
+    [data-theme="dark"] .accordion-item.active {
+      background: rgba(26, 130, 119, 0.1);
+    }
+
+    .accordion-header {
+      width: 100%;
+      text-align: left;
+      padding: 24px;
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    @media (hover: none) and (pointer: coarse) {
+      .accordion-header {
+        cursor: pointer;
+      }
+    }
+
+    .accordion-header svg {
+      width: 18px;
+      height: 18px;
+      color: var(--text-muted);
+      transition: transform 0.4s ease, color 0.3s;
+    }
+
+    .accordion-item.active .accordion-header svg {
+      transform: rotate(180deg);
+      color: var(--sb-thumb-mid);
+    }
+
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .accordion-content-inner {
+      padding: 0 24px 24px;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    .ecosystem-preview {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      aspect-ratio: 1/1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    @media (min-width: 901px) {
+      .ecosystem-preview-sticky {
+        position: sticky;
+        top: 100px;
+      }
+    }
+
+    .ecosystem-preview-fallback {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-faint);
       opacity: 0;
-      transform: translateY(28px);
-      transition: opacity 0.75s cubic-bezier(.23, 1, .32, 1),
-        transform 0.75s cubic-bezier(.23, 1, .32, 1);
+      visibility: hidden;
+      transition: opacity 0.5s, visibility 0.5s;
     }
 
-    .reveal.visible {
+    .ecosystem-preview-fallback.active {
       opacity: 1;
-      transform: none;
-    }
-
-    .stagger>* {
-      opacity: 0;
-      transform: translateY(22px);
-      transition: opacity 0.65s cubic-bezier(.23, 1, .32, 1),
-        transform 0.65s cubic-bezier(.23, 1, .32, 1);
-    }
-
-    .stagger.visible>*:nth-child(1) {
-      opacity: 1;
-      transform: none;
-      transition-delay: 0ms;
-    }
-
-    .stagger.visible>*:nth-child(2) {
-      opacity: 1;
-      transform: none;
-      transition-delay: 80ms;
-    }
-
-    .stagger.visible>*:nth-child(3) {
-      opacity: 1;
-      transform: none;
-      transition-delay: 160ms;
-    }
-
-    .stagger.visible>*:nth-child(4) {
-      opacity: 1;
-      transform: none;
-      transition-delay: 240ms;
-    }
-
-    .stagger.visible>*:nth-child(5) {
-      opacity: 1;
-      transform: none;
-      transition-delay: 320ms;
-    }
-
-    .stagger.visible>*:nth-child(6) {
-      opacity: 1;
-      transform: none;
-      transition-delay: 400ms;
+      visibility: visible;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1674,9 +1994,11 @@
       <ul class="nav-links" id="navLinks">
         <li><a href="#hero">Home</a></li>
         <li><a href="#about">About</a></li>
-        <li><a href="#projects">Work</a></li>
-        <li><a href="#expertise">Features</a></li>
-        <li><a href="#contact-banner">Contact</a></li>
+        <li><a href="#projects">Impact</a></li>
+        <li><a href="#expertise">Ecosystem</a></li>
+        <li><a href="#team">Team</a></li>
+        <li><a href="#media">Media</a></li>
+        <li><a href="#contact-banner">Tech</a></li>
       </ul>
 
       <div class="nav-right">
@@ -1707,8 +2029,9 @@
 
   <section id="hero" aria-labelledby="heroTitle">
     <main id="main" class="hero-inner container">
-      
-      <div style="display: flex; justify-content: space-between; align-items: center; gap: 40px; flex-wrap: wrap; margin-bottom: 32px;">
+
+      <div
+        style="display: flex; justify-content: space-between; align-items: center; gap: 40px; flex-wrap: wrap; margin-bottom: 32px;">
         <div style="flex: 1; min-width: 320px;">
           <p class="hero-label" id="heroLabel">
             Tech for Wellness, Equity for All
@@ -1718,15 +2041,27 @@
             VitaNest
           </h1>
 
+          <div class="mobile-logo-frame" style="justify-content: center; margin-bottom: 24px;">
+            <div
+              style="width: 140px; aspect-ratio: 1/1; border-radius: 50%; background: var(--surface); align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 12px 40px rgba(0,0,0,0.15); animation: fadeUp 0.8s forwards; animation-delay: 0.3s; opacity: 0;">
+              <img src="https://raw.githubusercontent.com/Rainier-PS/Vitanest/main/images/LOGO.svg" alt="VitaNest Logo"
+                style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+          </div>
+
           <div class="hero-sub-wrap" id="heroSubWrap" aria-live="polite" aria-atomic="true">
             <div class="hero-sub-track" id="heroSubTrack">
-              <span class="hero-subtitle">Bridging <span class="gradient-text" style="font-weight: 500;">advanced technology</span><br>&amp; elderly accessibility</span>
+              <span class="hero-subtitle">Bridging <span class="gradient-text" style="font-weight: 500;">advanced
+                  technology</span><br>&amp; elderly accessibility</span>
             </div>
           </div>
         </div>
 
-        <div style="width: clamp(140px, 18vw, 220px); aspect-ratio: 1/1; border-radius: 50%; background: var(--surface); display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 12px 40px rgba(0,0,0,0.15); flex-shrink: 0; opacity: 0; animation: fadeUp 0.8s forwards; animation-delay: 0.3s;" id="heroLogo" class="hero-logo-frame">
-          <span style="font-size: 1.2rem; color: var(--text-faint); letter-spacing: 0.1em; font-weight: 500;">LOGO</span>
+        <div
+          style="width: clamp(140px, 18vw, 220px); aspect-ratio: 1/1; border-radius: 50%; background: var(--surface); display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 12px 40px rgba(0,0,0,0.15); flex-shrink: 0; opacity: 0; animation: fadeUp 0.8s forwards; animation-delay: 0.3s;"
+          id="heroLogo" class="desktop-logo-frame">
+          <img src="https://raw.githubusercontent.com/Rainier-PS/Vitanest/main/images/LOGO.svg" alt="VitaNest Logo"
+            style="width: 100%; height: 100%; object-fit: cover;">
         </div>
       </div>
 
@@ -1745,7 +2080,7 @@
           rel="noopener noreferrer">Project Deck</a>
 
         <a class="hero-cta" href="#about">
-          Explore VitaNest
+          <span>Explore VitaNest</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
             stroke-linejoin="round" aria-hidden="true">
             <line x1="5" y1="12" x2="19" y2="12" />
@@ -1754,7 +2089,8 @@
         </a>
       </div>
 
-      <div class="scroll-hint" aria-hidden="true" style="position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);">
+      <div class="scroll-hint" aria-hidden="true"
+        style="position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);">
         <span>scroll</span>
         <div class="scroll-line"></div>
       </div>
@@ -1906,17 +2242,6 @@
 
       </div>
 
-      <div class="view-all-wrap reveal">
-        <a class="btn-outline" href="#">
-          <span>View All Projects</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round" aria-hidden="true">
-            <line x1="5" y1="12" x2="19" y2="12" />
-            <polyline points="12 5 19 12 12 19" />
-          </svg>
-        </a>
-      </div>
-
     </div>
   </section>
 
@@ -1929,63 +2254,118 @@
         <p class="section-sub">An all-in-one platform for physical, cognitive, and healthcare support</p>
       </div>
 
-      <div class="expertise-grid stagger">
-
-        <div class="expertise-card featured">
-          <div>
-            <div class="expertise-card-title">1. AeroFlap &amp; Penguin Rush</div>
-            <div class="expertise-card-body">
-              AeroFlap is a game where standing flies up and squatting descends. Penguin Rush improves reaction time by
-              making the user squat to run and stand to jump. These computer-vision games strengthen leg muscles,
-              balance, and coordination to prevent falls.
+      <div class="ecosystem-container stagger">
+        <div class="ecosystem-accordion" id="ecoAccordion">
+          <div class="accordion-item active" data-index="0">
+            <button class="accordion-header" aria-expanded="true">
+              1. AeroFlap &amp; Penguin Rush
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content-inner">
+                AeroFlap is a game where standing flies up and squatting descends. Penguin Rush improves reaction time
+                by
+                making the user squat to run and stand to jump. These computer-vision games strengthen leg muscles,
+                balance, and coordination to prevent falls.
+              </div>
             </div>
           </div>
-          <div class="expertise-image">
-
-            <span>Image placeholder</span>
+          <div class="accordion-item" data-index="1">
+            <button class="accordion-header" aria-expanded="false">
+              2. Brain Gym &amp; Logic
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content-inner">
+                Includes a Memory Sequence Game to strengthen short-term memory and a Math Quiz to improve logical
+                thinking.
+                These activities stimulate important cognitive functions to help maintain mental sharpness.
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item" data-index="2">
+            <button class="accordion-header" aria-expanded="false">
+              3. Literacy Focus Timer
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content-inner">
+                A Pomodoro-style timer combined with face detection that ensures the user is actually present and
+                reading,
+                promoting consistent cognitive engagement and lifelong learning habits.
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item" data-index="3">
+            <button class="accordion-header" aria-expanded="false">
+              4. Emergency Sign AI
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content-inner">
+                Trained using PictoBlox to recognize specific help gestures (like an open palm). When detected, it
+                triggers
+                a loud alarm and visual alert—crucial for seniors unable to speak or reach their phone.
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item" data-index="4">
+            <button class="accordion-header" aria-expanded="false">
+              5. Smart Medication Dispenser
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content-inner">
+                Hardware powered by Arduino Uno, RTC, and stepper motor. It automatically rotates to dispense
+                compartments
+                at scheduled times, with LCD and LED reminders to help elderly users track medication.
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item" data-index="5">
+            <button class="accordion-header" aria-expanded="false">
+              6. Daily Routine Reminders
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content-inner">
+                The complete VitaNest ecosystem also sends timely alerts for medication, meals, hydration, and daily
+                routines, supporting both medical adherence and daily living activities.
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="expertise-card">
-          <div class="expertise-card-title">2. Brain Gym &amp; Logic</div>
-          <div class="expertise-card-body">
-            Includes a Memory Sequence Game to strengthen short-term memory and a Math Quiz to improve logical thinking.
-            These activities stimulate important cognitive functions to help maintain mental sharpness.
+        <div class="ecosystem-preview-wrap">
+          <div class="ecosystem-preview-sticky">
+            <div class="ecosystem-preview" id="ecoPreview">
+              <div class="ecosystem-preview-fallback active">Placeholder: AeroFlap</div>
+              <div class="ecosystem-preview-fallback">Placeholder: Brain Gym</div>
+              <div class="ecosystem-preview-fallback">Placeholder: Literacy Focus</div>
+              <div class="ecosystem-preview-fallback">Placeholder: Emergency Sign</div>
+              <div class="ecosystem-preview-fallback">Placeholder: Med Dispenser</div>
+              <div class="ecosystem-preview-fallback">Placeholder: Routines</div>
+            </div>
           </div>
         </div>
-
-        <div class="expertise-card">
-          <div class="expertise-card-title">3. Literacy Focus Timer</div>
-          <div class="expertise-card-body">
-            A Pomodoro-style timer combined with face detection that ensures the user is actually present and reading,
-            promoting consistent cognitive engagement and lifelong learning habits.
-          </div>
-        </div>
-
-        <div class="expertise-card">
-          <div class="expertise-card-title">4. Emergency Sign AI</div>
-          <div class="expertise-card-body">
-            Trained using PictoBlox to recognize specific help gestures (like an open palm). When detected, it triggers
-            a loud alarm and visual alertâ€”crucial for seniors unable to speak or reach their phone.
-          </div>
-        </div>
-
-        <div class="expertise-card">
-          <div class="expertise-card-title">5. Smart Medication Dispenser</div>
-          <div class="expertise-card-body">
-            Hardware powered by Arduino Uno, RTC, and stepper motor. It automatically rotates to dispense compartments
-            at scheduled times, with LCD and LED reminders to help elderly users track medication.
-          </div>
-        </div>
-
-        <div class="expertise-card">
-          <div class="expertise-card-title">6. Daily Routine Reminders</div>
-          <div class="expertise-card-body">
-            The complete VitaNest ecosystem also sends timely alerts for medication, meals, hydration, and daily
-            routines, supporting both medical adherence and daily living activities.
-          </div>
-        </div>
-
       </div>
     </div>
   </section>
@@ -2003,45 +2383,49 @@
         <div class="team-card">
           <div class="team-avatar-wrap">
             <div class="team-avatar-inner">
-              <span style="font-size: 0.7rem; color: var(--text-faint);">Photo</span>
+              <img
+                src="https://raw.githubusercontent.com/Rainier-PS/rainier-ps.github.io/main/images/site/Rainier%20Pearson%20Saputra-Photo.avif"
+                alt="Rainier Pearson Saputra" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
           </div>
           <div class="team-info">
             <div class="team-meta">
-              <span class="team-role-tag">Design / Hardware</span>
+              <span class="team-role-tag">Co-Creator</span>
             </div>
-            <div class="team-name">Member 1</div>
-            <div class="team-bio">VitaNest contributor focused on XYZ.</div>
+            <div class="team-name">Rainier Pearson Saputra</div>
+            <div class="team-bio">Binus School Semarang</div>
           </div>
         </div>
 
         <div class="team-card">
           <div class="team-avatar-wrap">
             <div class="team-avatar-inner">
-              <span style="font-size: 0.7rem; color: var(--text-faint);">Photo</span>
+              <img src="https://raw.githubusercontent.com/Rainier-PS/Vitanest/main/images/Aflah_Profile-Image.jpeg"
+                alt="Aflah" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
           </div>
           <div class="team-info">
             <div class="team-meta">
-              <span class="team-role-tag">Software / AI</span>
+              <span class="team-role-tag">Co-Creator</span>
             </div>
-            <div class="team-name">Member 2</div>
-            <div class="team-bio">VitaNest contributor focused on XYZ.</div>
+            <div class="team-name">Aflah Berlian Darmanta</div>
+            <div class="team-bio">Binus School Semarang</div>
           </div>
         </div>
 
         <div class="team-card">
           <div class="team-avatar-wrap">
             <div class="team-avatar-inner">
-              <span style="font-size: 0.7rem; color: var(--text-faint);">Photo</span>
+              <img src="https://raw.githubusercontent.com/Rainier-PS/Vitanest/main/images/Kenan_Profile-Image.jpeg"
+                alt="Kenan" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
           </div>
           <div class="team-info">
             <div class="team-meta">
-              <span class="team-role-tag">Management / Logic</span>
+              <span class="team-role-tag">Co-Creator</span>
             </div>
-            <div class="team-name">Member 3</div>
-            <div class="team-bio">VitaNest contributor focused on XYZ.</div>
+            <div class="team-name">I Gede Made Kenan Putra Dharma</div>
+            <div class="team-bio">Binus School Semarang</div>
           </div>
         </div>
 
@@ -2098,11 +2482,12 @@
         </div>
 
         <a class="cta-link" href="#">
-          Download PictoBlox Project
+          <span>Download PictoBlox Project</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
             stroke-linejoin="round" aria-hidden="true">
-            <line x1="5" y1="12" x2="19" y2="12" />
-            <polyline points="12 5 19 12 12 19" />
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
           </svg>
         </a>
       </div>
@@ -2114,10 +2499,51 @@
 
       <p class="footer-copy">© 2026 TriCodeX. All rights reserved.</p>
       <nav class="footer-links" aria-label="Footer links">
+        <a href="https://codeavour.org/" target="_blank" rel="noopener noreferrer">Codeavour</a>
+        <a href="https://kodekiddo.com/" target="_blank" rel="noopener noreferrer">KodeKiddo</a>
         <a href="mailto:rainierps8@gmail.com">Email</a>
       </nav>
     </div>
   </footer>
+
+  <div class="settings-overlay" id="settingsOverlay" aria-hidden="true">
+    <div class="settings-backdrop" id="settingsBackdrop"></div>
+    <div class="settings-panel">
+      <div class="settings-header">
+        <h3 class="settings-title">Preferences</h3>
+        <button class="settings-close" id="settingsClose" aria-label="Close settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="settings-body">
+        <label class="settings-option">
+          <div class="settings-option-info">
+            <span class="settings-option-title">Custom Cursor</span>
+            <span class="settings-option-desc">Use the dynamic circular cursor</span>
+          </div>
+          <div class="toggle-switch">
+            <input type="checkbox" id="cursorToggle">
+            <span class="toggle-slider"></span>
+          </div>
+        </label>
+
+        <label class="settings-option">
+          <div class="settings-option-info">
+            <span class="settings-option-title">Disable Animations</span>
+            <span class="settings-option-desc">Turn off motion effects and reveals</span>
+          </div>
+          <div class="toggle-switch">
+            <input type="checkbox" id="animationToggle">
+            <span class="toggle-slider"></span>
+          </div>
+        </label>
+      </div>
+    </div>
+  </div>
 
   <script>
     'use strict';
@@ -2128,6 +2554,12 @@
     ];
 
     gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+    const storedCursor = localStorage.getItem('customCursor') === 'true';
+    if (storedCursor) document.body.classList.add('custom-cursor-enabled');
+
+    const reduceMotion = localStorage.getItem('disableAnimations') === 'true';
+    if (reduceMotion) document.body.classList.add('reduce-motion');
 
     const $cursor = document.getElementById('cursor');
     const $ring = document.getElementById('cursor-ring');
@@ -2158,10 +2590,40 @@
     const $toggle = document.getElementById('themeToggle');
     $html.setAttribute('data-theme', localStorage.getItem('theme') || 'dark');
 
-    $toggle.addEventListener('click', () => {
+    $toggle.addEventListener('click', (e) => {
       const next = $html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      $html.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
+
+      if (!document.startViewTransition) {
+        $html.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        return;
+      }
+
+      const x = e.clientX || window.innerWidth / 2;
+      const y = e.clientY || 40;
+      const endRadius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+
+      const transition = document.startViewTransition(() => {
+        $html.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+      });
+
+      transition.ready.then(() => {
+        const clipPath = [
+          `circle(0px at ${x}px ${y}px)`,
+          `circle(${endRadius}px at ${x}px ${y}px)`
+        ];
+        document.documentElement.animate(
+          {
+            clipPath: clipPath,
+          },
+          {
+            duration: 900,
+            easing: 'ease-in-out',
+            pseudoElement: '::view-transition-new(root)',
+          }
+        );
+      });
     });
 
     const $nav = document.getElementById('navbar');
@@ -2197,6 +2659,21 @@
       const open = $nav.classList.toggle('menu-open');
       $menuBtn.setAttribute('aria-expanded', open);
     });
+
+    document.addEventListener('click', (e) => {
+      if ($nav.classList.contains('menu-open') && !e.target.closest('#navbar')) {
+        $nav.classList.remove('menu-open');
+        $menuBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && $nav.classList.contains('menu-open')) {
+        $nav.classList.remove('menu-open');
+        $menuBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
     document.querySelectorAll('.nav-links a').forEach(a =>
       a.addEventListener('click', () => {
         $nav.classList.remove('menu-open');
@@ -2271,13 +2748,70 @@
     }
     window.addEventListener('load', () => setTimeout(initMarquee, 80));
 
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    gsap.utils.toArray('.reveal').forEach(el => {
+      gsap.from(el, {
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 85%',
+        },
+        y: 35,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power3.out'
       });
-    }, { threshold: 0.1 });
+    });
 
-    document.querySelectorAll('.reveal, .stagger').forEach(el => io.observe(el));
+    gsap.utils.toArray('.stagger').forEach(el => {
+      gsap.from(el.children, {
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 85%',
+        },
+        y: 35,
+        opacity: 0,
+        duration: 0.7,
+        stagger: 0.1,
+        ease: 'power3.out'
+      });
+    });
+
+    const accItems = document.querySelectorAll('.accordion-item');
+    const accContents = document.querySelectorAll('.accordion-content');
+    const previews = document.querySelectorAll('.ecosystem-preview-fallback');
+
+    accItems.forEach((item) => {
+      const header = item.querySelector('.accordion-header');
+      header.addEventListener('click', () => {
+        const index = item.getAttribute('data-index');
+        const isActive = item.classList.contains('active');
+
+        accItems.forEach(i => {
+          i.classList.remove('active');
+          i.querySelector('.accordion-header').setAttribute('aria-expanded', 'false');
+        });
+        accContents.forEach(c => {
+          c.style.maxHeight = null;
+        });
+        previews.forEach(p => p.classList.remove('active'));
+
+        if (!isActive) {
+          item.classList.add('active');
+          header.setAttribute('aria-expanded', 'true');
+          const content = item.querySelector('.accordion-content');
+          content.style.maxHeight = content.scrollHeight + "px";
+          previews[index].classList.add('active');
+        } else {
+          previews[0].classList.add('active');
+        }
+      });
+    });
+
+    const updateFirstAcc = () => {
+      const activeObj = document.querySelector('.accordion-item.active .accordion-content');
+      if (activeObj) activeObj.style.maxHeight = activeObj.scrollHeight + "px";
+    }
+    window.addEventListener('load', updateFirstAcc);
+    window.addEventListener('resize', updateFirstAcc);
 
     gsap.to('#about .about-text', {
       y: -40,
@@ -2301,6 +2835,57 @@
         });
       }, 2800);
     };
+
+    const $settingsOverlay = document.getElementById('settingsOverlay');
+    const $settingsBackdrop = document.getElementById('settingsBackdrop');
+    const $settingsClose = document.getElementById('settingsClose');
+    const $cursorToggle = document.getElementById('cursorToggle');
+    const $animationToggle = document.getElementById('animationToggle');
+
+    $cursorToggle.checked = storedCursor;
+    $animationToggle.checked = reduceMotion;
+
+    const openSettings = () => {
+      $settingsOverlay.classList.add('open');
+      $settingsOverlay.setAttribute('aria-hidden', 'false');
+    };
+    const closeSettings = () => {
+      $settingsOverlay.classList.remove('open');
+      $settingsOverlay.setAttribute('aria-hidden', 'true');
+    };
+
+    $settingsBackdrop.addEventListener('click', closeSettings);
+    $settingsClose.addEventListener('click', closeSettings);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && $settingsOverlay.classList.contains('open')) {
+        closeSettings();
+      }
+      if (e.altKey && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        $settingsOverlay.classList.contains('open') ? closeSettings() : openSettings();
+      }
+    });
+
+    $cursorToggle.addEventListener('change', (e) => {
+      const enabled = e.target.checked;
+      localStorage.setItem('customCursor', enabled);
+      if (enabled) {
+        document.body.classList.add('custom-cursor-enabled');
+      } else {
+        document.body.classList.remove('custom-cursor-enabled');
+      }
+    });
+
+    $animationToggle.addEventListener('change', (e) => {
+      const disabled = e.target.checked;
+      localStorage.setItem('disableAnimations', disabled);
+      if (disabled) {
+        document.body.classList.add('reduce-motion');
+      } else {
+        document.body.classList.remove('reduce-motion');
+      }
+    });
   </script>
 </body>
 
