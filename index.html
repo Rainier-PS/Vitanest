@@ -466,7 +466,7 @@
     }
 
     .container {
-      max-width: 1040px;
+      max-width: 1200px;
       margin: 0 auto;
       padding: 0 28px;
     }
@@ -551,7 +551,7 @@
       transform: translateX(-50%);
       z-index: 500;
       width: calc(100% - 48px);
-      max-width: 1040px;
+      max-width: 1200px;
       transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
     }
 
@@ -783,7 +783,7 @@
     }
 
     .hero-label {
-      font-size: 0.7rem;
+      font-size: 0.85rem;
       letter-spacing: 0.18em;
       text-transform: uppercase;
       color: var(--text-faint);
@@ -805,7 +805,7 @@
 
     .hero-title {
       font-family: var(--font-display);
-      font-size: clamp(2.6rem, 6.5vw, 5rem);
+      font-size: clamp(3rem, 8vw, 6rem);
       font-weight: 500;
       line-height: 1.06;
       letter-spacing: -0.045em;
@@ -835,7 +835,7 @@
 
     .hero-subtitle {
       font-family: var(--font-display);
-      font-size: clamp(1.4rem, 3.2vw, 2.4rem);
+      font-size: clamp(1.6rem, 4vw, 3rem);
       font-weight: 400;
       letter-spacing: -0.025em;
       color: var(--text-muted);
@@ -845,7 +845,7 @@
     }
 
     .hero-body {
-      max-width: 920px;
+      max-width: 100%;
       font-size: 1.15rem;
       font-weight: 300;
       color: var(--text-muted);
@@ -987,17 +987,53 @@
     }
 
     .about-text {
-      font-family: var(--font-display);
-      font-size: clamp(1.3rem, 2.8vw, 2.1rem);
-      font-weight: 400;
-      line-height: 1.5;
-      letter-spacing: -0.025em;
-      color: var(--text-muted);
-      max-width: 920px;
+      width: 100%;
     }
 
-    .about-text .highlight {
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .about-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .about-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px;
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      transition: border-color 0.3s, background 0.3s, transform 0.3s;
+    }
+
+    .about-card:hover {
+      border-color: var(--border-hover);
+      background: var(--card-hover);
+      transform: translateY(-4px);
+    }
+
+    .about-card-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 500;
       color: var(--text);
+      margin-bottom: 24px;
+      letter-spacing: -0.02em;
+    }
+
+    .about-card p {
+      margin-bottom: 16px;
+    }
+
+    .about-card p:last-child {
+      margin-bottom: 0;
     }
 
     .section-label {
@@ -2208,7 +2244,7 @@
         </div>
 
         <div
-          style="width: clamp(140px, 18vw, 220px); aspect-ratio: 1/1; border-radius: 50%; background: var(--surface); display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 12px 40px rgba(0,0,0,0.15); flex-shrink: 0; opacity: 0; animation: fadeUp 0.8s forwards; animation-delay: 0.3s;"
+          style="width: clamp(160px, 22vw, 260px); margin-right: clamp(20px, 4vw, 60px); aspect-ratio: 1/1; border-radius: 50%; background: var(--surface); display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 12px 40px rgba(0,0,0,0.15); flex-shrink: 0; opacity: 0; animation: fadeUp 0.8s forwards; animation-delay: 0.3s;"
           id="heroLogo" class="desktop-logo-frame logo-frame-hover">
           <img src="https://raw.githubusercontent.com/Rainier-PS/Vitanest/main/images/LOGO.svg" alt="VitaNest Logo"
             style="width: 100%; height: 100%; object-fit: cover;">
@@ -2253,19 +2289,63 @@
     <div class="container">
 
       <div class="about-text reveal" id="aboutHeading">
-        <p style="margin-bottom: 30px; font-size: 0.88em; line-height: 1.65;">
-          <span class="highlight" style="display: block; margin-bottom: 8px; font-size: 1.15em;">The Problem:</span>
-          Many elderly individuals face serious health and safety challenges such as cognitive decline and fall risks.
-          Many existing health apps are designed for younger users and are too complicated or fragmented.
-        </p>
+        <div class="about-grid" style="margin-bottom: 40px;">
+          <div class="about-card">
+            <h3 class="about-card-title">The Problem</h3>
+            <p>Many elderly individuals face serious health and safety challenges as they age. One major issue is cognitive decline. According to the World Health Organization, 57 million people worldwide were living with dementia in 2021, with nearly 10 million new cases every year<sup><a href="#ref-1" style="color: var(--sb-thumb-mid); text-decoration: none;">[1]</a></sup>. Dementia affects memory, decision-making, and daily functioning, making it difficult for elderly individuals to remember important routines such as taking medication.</p>
+            <p>Another major challenge is physical decline and fall risk. Research shows that 28–35% of adults over 65 experience falls every year, often due to declining balance, muscle strength, and coordination<sup><a href="#ref-2" style="color: var(--sb-thumb-mid); text-decoration: none;">[2]</a></sup>. Additionally, many seniors struggle with loneliness and lack of mental stimulation, which can accelerate cognitive deterioration<sup><a href="#ref-5" style="color: var(--sb-thumb-mid); text-decoration: none;">[5]</a></sup>.</p>
+            <p>While many health apps exist, they are often designed for younger users and are too complicated or fragmented for elderly individuals, forcing them to manage multiple apps and devices. These challenges not only affect elderly individuals but also create emotional and financial burdens for families and caregivers.</p>
+          </div>
 
-        <p style="font-size: 0.88em; line-height: 1.65;">
-          <span class="highlight" style="display: block; margin-bottom: 8px; font-size: 1.15em;">Why We Chose This
-            Theme:</span>
-          The global elderly population is rapidly increasing, yet underserved by modern digital solutions. By designing
-          VitaNest around accessibility and wellness, we aim to demonstrate how an integrated ecosystem can empower
-          seniors to live safer, healthier, and more independent lives.
-        </p>
+          <div class="about-card">
+            <h3 class="about-card-title">Why We Chose This Theme</h3>
+            <p>Technology has the potential to significantly improve quality of life, yet many elderly individuals remain underserved by modern digital solutions. Most existing technologies are designed with younger users in mind, often overlooking the accessibility needs and daily challenges faced by older adults.</p>
+            <p>At the same time, the global elderly population is rapidly increasing, creating a growing need for solutions that support healthy aging, independence, and safety. Addressing these challenges requires inclusive technologies that are both powerful and easy to use. For this reason, we chose the theme “Tech for Wellness, Equity for All.”</p>
+            <p>By designing VitaNest around accessibility, simplicity, and wellness, we aim to demonstrate how artificial intelligence and smart technology can be used to create inclusive health solutions that empower elderly individuals to live safer, healthier, and more independent lives.</p>
+          </div>
+        </div>
+
+        <div class="references-section" style="padding-top: 24px; border-top: 1px solid var(--border);">
+          <details style="cursor: pointer;">
+            <summary
+              style="font-family: var(--font-display); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); outline: none; user-select: none;">
+              Show References
+            </summary>
+            <ol
+              style="font-family: var(--font-body); font-size: 0.8rem; color: var(--text-muted); padding-left: 20px; padding-top: 16px; line-height: 1.6; list-style-type: decimal; display: flex; flex-direction: column; gap: 8px; margin: 0; cursor: text;">
+              <li id="ref-1">World Health Organization. (2025, March 31). Dementia. <a
+                  href="https://www.who.int/news-room/fact-sheets/detail/dementia" target="_blank"
+                  rel="noopener noreferrer"
+                  style="color: inherit; text-decoration: underline; text-underline-offset: 2px;">https://www.who.int/news-room/fact-sheets/detail/dementia</a>
+              </li>
+              <li id="ref-2">Xing, L., Bao, Y., Wang, B., Shi, M., Wei, Y., Huang, X., Dai, Y., Shi, H., Gai, X., Luo,
+                Q., Yin, Y., & Qin, D. (2023). Falls caused by balance disorders in the elderly with multiple systems
+                involved: Pathogenic mechanisms and treatment strategies. <em>Frontiers in Neurology</em>, 14, 1128092.
+                <a href="https://doi.org/10.3389/fneur.2023.1128092" target="_blank" rel="noopener noreferrer"
+                  style="color: inherit; text-decoration: underline; text-underline-offset: 2px;">https://doi.org/10.3389/fneur.2023.1128092</a>
+              </li>
+              <li id="ref-3">World Health Organization. (2024, June 26). Nearly 1.8 billion adults at risk of disease
+                from not doing enough physical activity. <a
+                  href="https://www.who.int/news/item/26-06-2024-nearly-1.8-billion-adults-at-risk-of-disease-from-not-doing-enough-physical-activity"
+                  target="_blank" rel="noopener noreferrer"
+                  style="color: inherit; text-decoration: underline; text-underline-offset: 2px;">https://www.who.int/news/item/26-06-2024-nearly-1.8-billion-adults-at-risk-of-disease-from-not-doing-enough-physical-activity</a>
+              </li>
+              <li id="ref-4">Huang, S.-F., Fan, C.-W., Nisrina, D. K., Lin, T.-W., & Huang, W. C. (2025). A novel
+                gamified exercise program incorporating stampede training for enhancing functional fitness, physical
+                activity levels, and quality of life in community-dwelling older adults: Randomized parallel exploratory
+                trial. <em>JMIR Serious Games</em>, 13(1), e73474. <a href="https://games.jmir.org/2025/1/e73474"
+                  target="_blank" rel="noopener noreferrer"
+                  style="color: inherit; text-decoration: underline; text-underline-offset: 2px;">https://games.jmir.org/2025/1/e73474</a>
+              </li>
+              <li id="ref-5">Yang, Y., Wang, K., Liu, S., Liu, H., Zhang, T., & Luo, J. (2023). Exergames improve
+                cognitive function in older adults and their possible mechanisms: A systematic review. <em>Journal of
+                  Global Health</em>, 13, 04177. <a href="https://doi.org/10.7189/jogh.13.04177" target="_blank"
+                  rel="noopener noreferrer"
+                  style="color: inherit; text-decoration: underline; text-underline-offset: 2px;">https://doi.org/10.7189/jogh.13.04177</a>
+              </li>
+            </ol>
+          </details>
+        </div>
       </div>
     </div>
   </section>
@@ -2503,12 +2583,24 @@
         <div class="ecosystem-preview-wrap">
           <div class="ecosystem-preview-sticky">
             <div class="ecosystem-preview" id="ecoPreview">
-              <div class="ecosystem-preview-fallback active">Placeholder: AeroFlap</div>
-              <div class="ecosystem-preview-fallback">Placeholder: Brain Gym</div>
-              <div class="ecosystem-preview-fallback">Placeholder: Literacy Focus</div>
-              <div class="ecosystem-preview-fallback">Placeholder: Emergency Sign</div>
-              <div class="ecosystem-preview-fallback">Placeholder: Med Dispenser</div>
-              <div class="ecosystem-preview-fallback">Placeholder: Routines</div>
+              <div class="ecosystem-preview-fallback active"><img
+                  src="https://raw.githubusercontent.com/Rainier-PS/Vitanest/main/images/Aeroflap.avif" alt="Aeroflap"
+                  style="width: 100%; height: 100%; object-fit: cover;"></div>
+              <div class="ecosystem-preview-fallback"><img
+                  src="https://raw.githubusercontent.com/Rainier-PS/Vitanest/main/images/Mind-Gym.avif" alt="Mind Gym"
+                  style="width: 100%; height: 100%; object-fit: cover;"></div>
+              <div class="ecosystem-preview-fallback"><img
+                  src="https://raw.githubusercontent.com/Rainier-PS/Vitanest/main/images/Literacy-Timer.avif"
+                  alt="Literacy Timer" style="width: 100%; height: 100%; object-fit: cover;"></div>
+              <div class="ecosystem-preview-fallback"><img
+                  src="https://raw.githubusercontent.com/Rainier-PS/Vitanest/main/images/Emergency-Sign.avif"
+                  alt="Emergency Sign" style="width: 100%; height: 100%; object-fit: cover;"></div>
+              <div class="ecosystem-preview-fallback"><img
+                  src="https://raw.githubusercontent.com/Rainier-PS/Vitanest/main/images/Pill-Dispenser.avif"
+                  alt="Pill Dispenser" style="width: 100%; height: 100%; object-fit: cover;"></div>
+              <div class="ecosystem-preview-fallback"><img
+                  src="https://raw.githubusercontent.com/Rainier-PS/Vitanest/main/images/Notification.avif"
+                  alt="Notification Reminders" style="width: 100%; height: 100%; object-fit: cover;"></div>
             </div>
           </div>
         </div>
