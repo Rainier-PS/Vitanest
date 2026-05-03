@@ -242,7 +242,7 @@
       background: #fff;
       border-radius: 50%;
       pointer-events: none;
-      z-index: 99999;
+      z-index: 999999;
       transform: translate(-50%, -50%);
       transition: width 0.2s, height 0.2s, border-radius 0.2s, opacity 0.2s;
       mix-blend-mode: difference;
@@ -259,7 +259,7 @@
       border: 1.5px solid rgba(255, 255, 255, 0.35);
       border-radius: 50%;
       pointer-events: none;
-      z-index: 99998;
+      z-index: 999998;
       transform: translate(-50%, -50%);
       transition: width 0.35s cubic-bezier(.23, 1, .32, 1),
         height 0.35s cubic-bezier(.23, 1, .32, 1),
@@ -569,7 +569,7 @@
     }
 
     #navbar.scrolled {
-      max-width: 640px;
+      max-width: 780px;
     }
 
     #navbar.scrolled .nav-inner {
@@ -717,19 +717,48 @@
         border-radius: 20px;
         padding: 16px;
         margin-top: 12px;
-        gap: 4px;
+        gap: 12px;
         box-shadow: 0 8px 40px rgba(0, 0, 0, 0.22);
         z-index: 100;
         max-height: 70vh;
         overflow-y: auto;
       }
 
+      #navbar.menu-open .nav-links li {
+        position: relative;
+      }
+
       #navbar.menu-open .nav-links li a {
         font-size: 1rem;
         font-weight: 500;
-        padding: 10px 16px;
+        padding: 14px 16px;
         border-radius: 12px;
         border-bottom: none;
+        position: relative;
+        overflow: hidden;
+      }
+
+      #navbar.menu-open .nav-links li a::after {
+        content: '';
+        position: absolute;
+        top: var(--y, 50%);
+        left: var(--x, 50%);
+        width: 120px;
+        height: 120px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 60%);
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s;
+        z-index: -1;
+      }
+
+      [data-theme="light"] #navbar.menu-open .nav-links li a::after {
+        background: radial-gradient(circle, rgba(0, 0, 0, 0.08) 0%, transparent 60%);
+      }
+
+      #navbar.menu-open .nav-links li a:hover::after {
+        opacity: 1;
       }
 
       #navbar.menu-open .nav-menu-btn span {
@@ -738,12 +767,12 @@
     }
 
     #hero {
-      min-height: 100svh;
+      min-height: 85svh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       padding-top: 120px;
-      padding-bottom: 140px;
+      padding-bottom: 40px;
       overflow: hidden;
       position: relative;
     }
@@ -881,63 +910,7 @@
       }
     }
 
-    .scroll-hint {
-      position: absolute;
-      bottom: 16px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      opacity: 0;
-      animation: fadeUp 0.8s 2s forwards;
-    }
 
-    @media (max-width: 640px) {
-      .scroll-hint {
-        display: none;
-      }
-    }
-
-    .scroll-hint span {
-      font-size: 0.6rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--text-faint);
-    }
-
-    .scroll-line {
-      width: 1px;
-      height: 40px;
-      background: var(--border-hover);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .scroll-line::after {
-      content: '';
-      position: absolute;
-      top: -100%;
-      width: 100%;
-      height: 100%;
-      background: var(--text-muted);
-      animation: scrollDrop 2.2s 2.2s ease-in-out infinite;
-    }
-
-    @keyframes scrollDrop {
-      0% {
-        top: -100%
-      }
-
-      50% {
-        top: 0
-      }
-
-      100% {
-        top: 100%
-      }
-    }
 
     @keyframes fadeUp {
       to {
@@ -946,7 +919,8 @@
     }
 
     .marquee-section {
-      margin-top: 80px;
+      margin-top: 0px;
+      margin-bottom: 20px;
       height: 90px;
       width: 100%;
       overflow: hidden;
@@ -961,7 +935,7 @@
     @media (max-width: 640px) {
       .marquee-section {
         height: 70px;
-        margin-top: 60px;
+        margin-top: 0px;
       }
     }
 
@@ -1001,14 +975,14 @@
     }
 
     #about {
-      padding: 120px 0 80px;
+      padding: 60px 0 60px;
       position: relative;
       z-index: 1;
     }
 
     @media (max-width: 768px) {
       #about {
-        padding: 80px 0 60px;
+        padding: 40px 0 40px;
       }
     }
 
@@ -1646,6 +1620,10 @@
         width: 100%;
         justify-content: center;
       }
+
+      .cta-link svg {
+        display: none;
+      }
     }
 
     /* --- Shared Fluid Button Hover Animation --- */
@@ -1948,6 +1926,168 @@
       visibility: visible;
     }
 
+    /* Lightbox Styles */
+    .lightbox-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 100001;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      cursor: zoom-out;
+    }
+
+    .lightbox-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .lightbox-overlay img {
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 12px;
+      transform: scale(0.95);
+      transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+    }
+
+    .lightbox-overlay.active img {
+      transform: scale(1);
+    }
+
+    /* Timeline Styles */
+    #timeline {
+      padding: 80px 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    @media (max-width: 768px) {
+      #timeline {
+        padding: 60px 0;
+      }
+    }
+
+    .timeline-container {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      position: relative;
+      margin-top: 40px;
+    }
+
+    .timeline-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 20px;
+      width: 2px;
+      background: var(--border);
+      z-index: -1;
+    }
+
+    .timeline-progress {
+      position: absolute;
+      top: 0;
+      left: 20px;
+      width: 2px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--sb-thumb-start) 0%, var(--sb-thumb-mid) 50%, var(--sb-thumb-end) 100%);
+      transform-origin: top;
+      transform: scaleY(0);
+      z-index: 0;
+    }
+
+    .timeline-item {
+      display: flex;
+      gap: 24px;
+      position: relative;
+    }
+
+    .timeline-marker {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      border: 2px solid var(--sb-thumb-mid);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-weight: 600;
+      color: var(--text);
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: background 0.4s, color 0.4s, transform 0.4s, border-color 0.4s;
+    }
+
+    .timeline-marker.active {
+      background: var(--text);
+      color: var(--bg);
+      border-color: var(--text);
+      transform: scale(1.15);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .char {
+      display: inline-block;
+      will-change: transform, opacity;
+    }
+
+    .timeline-content {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+      flex-grow: 1;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    .timeline-content:hover {
+      border-color: var(--border-hover);
+      background: var(--card-hover);
+    }
+
+    .timeline-title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .timeline-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    @media (max-width: 640px) {
+
+      .timeline-container::before,
+      .timeline-progress {
+        left: 16px;
+      }
+
+      .timeline-marker {
+        width: 34px;
+        height: 34px;
+        font-size: 0.875rem;
+      }
+
+      .timeline-item {
+        gap: 16px;
+      }
+    }
+
     @media (prefers-reduced-motion: reduce) {
 
       *,
@@ -1965,6 +2105,15 @@
       outline: 2px solid var(--text);
       outline-offset: 3px;
       border-radius: 4px;
+    }
+
+    .logo-frame-hover {
+      transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.4s !important;
+    }
+
+    .logo-frame-hover:hover {
+      transform: scale(1.08) !important;
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.25) !important;
     }
   </style>
 </head>
@@ -1996,6 +2145,7 @@
         <li><a href="#about">About</a></li>
         <li><a href="#projects">Impact</a></li>
         <li><a href="#expertise">Ecosystem</a></li>
+        <li><a href="#timeline">Journey</a></li>
         <li><a href="#team">Team</a></li>
         <li><a href="#media">Media</a></li>
         <li><a href="#contact-banner">Tech</a></li>
@@ -2042,7 +2192,7 @@
           </h1>
 
           <div class="mobile-logo-frame" style="justify-content: center; margin-bottom: 24px;">
-            <div
+            <div class="logo-frame-hover"
               style="width: 140px; aspect-ratio: 1/1; border-radius: 50%; background: var(--surface); align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 12px 40px rgba(0,0,0,0.15); animation: fadeUp 0.8s forwards; animation-delay: 0.3s; opacity: 0;">
               <img src="https://raw.githubusercontent.com/Rainier-PS/Vitanest/main/images/LOGO.svg" alt="VitaNest Logo"
                 style="width: 100%; height: 100%; object-fit: cover;">
@@ -2059,7 +2209,7 @@
 
         <div
           style="width: clamp(140px, 18vw, 220px); aspect-ratio: 1/1; border-radius: 50%; background: var(--surface); display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 12px 40px rgba(0,0,0,0.15); flex-shrink: 0; opacity: 0; animation: fadeUp 0.8s forwards; animation-delay: 0.3s;"
-          id="heroLogo" class="desktop-logo-frame">
+          id="heroLogo" class="desktop-logo-frame logo-frame-hover">
           <img src="https://raw.githubusercontent.com/Rainier-PS/Vitanest/main/images/LOGO.svg" alt="VitaNest Logo"
             style="width: 100%; height: 100%; object-fit: cover;">
         </div>
@@ -2089,11 +2239,7 @@
         </a>
       </div>
 
-      <div class="scroll-hint" aria-hidden="true"
-        style="position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);">
-        <span>scroll</span>
-        <div class="scroll-line"></div>
-      </div>
+
     </main>
   </section>
 
@@ -2364,6 +2510,69 @@
               <div class="ecosystem-preview-fallback">Placeholder: Med Dispenser</div>
               <div class="ecosystem-preview-fallback">Placeholder: Routines</div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="timeline" aria-labelledby="timelineHeading">
+    <div class="container">
+      <div class="section-header reveal">
+        <p class="section-label">Journey</p>
+        <h2 class="section-title" id="timelineHeading">Development Stages</h2>
+        <p class="section-sub">How VitaNest came to life</p>
+      </div>
+
+      <div class="timeline-container stagger" id="timelineContainer">
+        <div class="timeline-progress" id="timelineProgress"></div>
+        <div class="timeline-item">
+          <div class="timeline-marker">1</div>
+          <div class="timeline-content">
+            <h3 class="timeline-title">Initiation</h3>
+            <p class="timeline-desc">Our idea was inspired by the common health issues faced by elderly individuals
+              worldwide. We brainstormed as a team, discussed with our mentor, and identified the main problems that
+              needed solutions.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker">2</div>
+          <div class="timeline-content">
+            <h3 class="timeline-title">Planning</h3>
+            <p class="timeline-desc">We spent about a month planning our project. This included setting timelines and
+              learning how to use the features on PictoBlox. We also consulted with our mentor to ensure our idea was
+              achievable within the timeframe.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker">3</div>
+          <div class="timeline-content">
+            <h3 class="timeline-title">Execution</h3>
+            <p class="timeline-desc">With our plan, we started developing VitaNest both at school and at KodeKiddo's
+              special classes for Codeavour 7.0. Over two months, we worked on coding the features, and integrating the
+              machine learning for the gesture and pose recognition model.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker">4</div>
+          <div class="timeline-content">
+            <h3 class="timeline-title">Finalization</h3>
+            <p class="timeline-desc">Once everything was finalized and working smoothly, we recorded our presentation
+              video and a demonstration to showcase our project before submitting our work to the Codeavour 7.0
+              submission form.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker">5</div>
+          <div class="timeline-content">
+            <h3 class="timeline-title">Monitoring and Controlling</h3>
+            <p class="timeline-desc">During this stage, we tested the program extensively, fixed bugs, optimized the
+              machine learning model, and refined the user experience based on feedback from our mentor and real-world
+              testing with elderly individuals.</p>
           </div>
         </div>
       </div>
@@ -2748,32 +2957,105 @@
     }
     window.addEventListener('load', () => setTimeout(initMarquee, 80));
 
-    gsap.utils.toArray('.reveal').forEach(el => {
-      gsap.from(el, {
-        scrollTrigger: {
-          trigger: el,
-          start: 'top 85%',
-        },
-        y: 35,
+    function splitTextToSpans(selector) {
+      document.querySelectorAll(selector).forEach(el => {
+        const text = el.innerText;
+        el.innerHTML = '';
+        text.split('').forEach(char => {
+          if (char === '\n') {
+            el.appendChild(document.createElement('br'));
+            return;
+          }
+          const span = document.createElement('span');
+          span.className = 'char';
+          span.innerHTML = char === ' ' ? '&nbsp;' : char;
+          el.appendChild(span);
+        });
+      });
+    }
+
+    splitTextToSpans('.section-title, .cta-title');
+
+    gsap.utils.toArray('.section-title, .cta-title').forEach(title => {
+      gsap.from(title.querySelectorAll('.char'), {
+        scrollTrigger: { trigger: title, start: 'top 95%', end: 'top 60%', scrub: 1 },
+        y: 80,
         opacity: 0,
-        duration: 0.8,
-        ease: 'power3.out'
+        scale: 0.5,
+        rotationX: -90,
+        stagger: 0.05,
+        ease: 'back.out(1.5)'
       });
     });
 
-    gsap.utils.toArray('.stagger').forEach(el => {
-      gsap.from(el.children, {
+    gsap.from('#aboutHeading p', {
+      scrollTrigger: { trigger: '#about', start: 'top 100%', end: 'top 40%', scrub: 1 },
+      y: 120,
+      scale: 0.8,
+      opacity: 0,
+      filter: 'blur(24px)',
+      stagger: 0.2
+    });
+
+    gsap.from('.project-card', {
+      scrollTrigger: { trigger: '#projectsGrid', start: 'top 100%', end: 'top 40%', scrub: 1 },
+      y: 150, skewY: 5, opacity: 0, stagger: 0.15
+    });
+    gsap.from('.accordion-item', {
+      scrollTrigger: { trigger: '#ecoAccordion', start: 'top 100%', end: 'top 50%', scrub: 1 },
+      x: 100, opacity: 0, stagger: 0.1
+    });
+
+    gsap.from('#ecoPreview', {
+      scrollTrigger: { trigger: '#ecoPreview', start: 'top 95%', end: 'top 50%', scrub: 1 },
+      scale: 0.5, opacity: 0, rotationY: 45
+    });
+
+    gsap.to('#timelineProgress', {
+      scrollTrigger: { trigger: '#timelineContainer', start: 'top 60%', end: 'bottom 60%', scrub: 1 },
+      scaleY: 1, ease: 'none'
+    });
+
+    gsap.utils.toArray('.timeline-item').forEach((item, i) => {
+      gsap.from(item, {
+        scrollTrigger: { trigger: item, start: 'top 95%', end: 'top 60%', scrub: 1 },
+        x: i % 2 === 0 ? -100 : 100, opacity: 0
+      });
+
+      gsap.to(item.querySelector('.timeline-marker'), {
         scrollTrigger: {
-          trigger: el,
-          start: 'top 85%',
-        },
-        y: 35,
-        opacity: 0,
-        duration: 0.7,
-        stagger: 0.1,
-        ease: 'power3.out'
+          trigger: item,
+          start: 'top 60%',
+          toggleClass: 'active',
+        }
       });
     });
+
+    gsap.utils.toArray('.team-card').forEach((card, i) => {
+      let tl = gsap.timeline({
+        scrollTrigger: { trigger: card, start: 'top 95%', end: 'top 30%', scrub: 1 }
+      });
+      tl.fromTo(card, { scale: 0.2, y: 100, opacity: 0 }, { scale: 1.08, y: -10, opacity: 1, duration: 0.75 })
+        .to(card, { scale: 1, y: 0, duration: 0.25 });
+    });
+
+    gsap.from('.media-card', {
+      scrollTrigger: { trigger: '.media-grid', start: 'top 100%', end: 'top 50%', scrub: 1 },
+      y: 100, scale: 0.8, opacity: 0, stagger: 0.2
+    });
+
+    gsap.utils.toArray('.section-label, .section-sub').forEach(el => {
+      gsap.from(el, {
+        scrollTrigger: { trigger: el, start: 'top 100%', end: 'top 70%', scrub: 1 },
+        y: 40, opacity: 0
+      });
+    });
+
+    let ctaTl = gsap.timeline({
+      scrollTrigger: { trigger: '.cta-box', start: 'top 100%', end: 'top 40%', scrub: 1 }
+    });
+    ctaTl.fromTo('.cta-box', { scale: 0.2, y: 150, opacity: 0 }, { scale: 1.15, y: -20, opacity: 1, duration: 0.7 })
+      .to('.cta-box', { scale: 1, y: 0, duration: 0.3 });
 
     const accItems = document.querySelectorAll('.accordion-item');
     const accContents = document.querySelectorAll('.accordion-content');
@@ -2886,6 +3168,53 @@
         document.body.classList.remove('reduce-motion');
       }
     });
+
+    const $lightbox = document.createElement('div');
+    $lightbox.id = 'lightbox';
+    $lightbox.className = 'lightbox-overlay';
+    $lightbox.setAttribute('aria-hidden', 'true');
+    $lightbox.innerHTML = '<img id="lightbox-img" src="" alt="">';
+    document.body.appendChild($lightbox);
+
+    const $lightboxImg = document.getElementById('lightbox-img');
+
+    document.querySelectorAll('img').forEach(img => {
+      if (img.alt.includes('Logo')) {
+      } else {
+        img.style.cursor = 'zoom-in';
+        img.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          $lightboxImg.src = img.src;
+          $lightboxImg.alt = img.alt;
+          $lightbox.classList.add('active');
+          $lightbox.setAttribute('aria-hidden', 'false');
+        });
+      }
+    });
+
+    $lightbox.addEventListener('click', () => {
+      $lightbox.classList.remove('active');
+      $lightbox.setAttribute('aria-hidden', 'true');
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && $lightbox.classList.contains('active')) {
+        $lightbox.classList.remove('active');
+        $lightbox.setAttribute('aria-hidden', 'true');
+      }
+    });
+
+    document.querySelectorAll('#navbar .nav-links li a').forEach(a => {
+      a.addEventListener('mousemove', e => {
+        const rect = a.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        a.style.setProperty('--x', `${x}px`);
+        a.style.setProperty('--y', `${y}px`);
+      });
+    });
+
   </script>
 </body>
 
