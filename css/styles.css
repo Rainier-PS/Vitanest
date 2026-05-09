@@ -1146,6 +1146,7 @@
       flex-direction: column;
       height: 100%;
       min-height: min(280px, 42vw);
+      will-change: transform, opacity;
     }
 
     .ps-copy.ps-problem::before {
@@ -1225,6 +1226,8 @@
       aspect-ratio: 4 / 3;
       width: 100%;
       max-height: min(340px, 46vw);
+      will-change: transform, opacity;
+      transform: translateZ(0);
     }
 
     .ps-stage:nth-child(even) .ps-media-inner {
@@ -1346,6 +1349,8 @@
       overflow: hidden;
       isolation: isolate;
       box-shadow: 0 24px 80px rgba(0, 0, 0, 0.2);
+      will-change: transform, opacity;
+      transform: translateZ(0);
     }
 
     .sdg-orbit {
@@ -1436,6 +1441,7 @@
       min-height: 190px;
       transform-style: preserve-3d;
       transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+      will-change: transform, opacity;
     }
 
     .sdg-pillar:hover {
@@ -2149,8 +2155,6 @@
       box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.3);
     }
 
-    /* ------------------------------------------ */
-
     footer {
       padding: 28px 0;
       position: relative;
@@ -2371,7 +2375,6 @@
       visibility: visible;
     }
 
-    /* Lightbox Styles */
     .lightbox-overlay {
       position: fixed;
       inset: 0;
