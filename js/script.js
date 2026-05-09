@@ -6,6 +6,11 @@
     ];
 
     gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+    gsap.defaults({ overwrite: 'auto', force3D: true });
+    ScrollTrigger.config({
+      ignoreMobileResize: true,
+      autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load'
+    });
 
     const storedCursor = localStorage.getItem('customCursor') === 'true';
     if (storedCursor) document.body.classList.add('custom-cursor-enabled');
@@ -17,18 +22,20 @@
     const $ring = document.getElementById('cursor-ring');
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-    if (!isTouchDevice) {
+    if (!isTouchDevice && $cursor && $ring) {
       let mx = -200, my = -200, rx = -200, ry = -200;
+      gsap.set([$cursor, $ring], { xPercent: -50, yPercent: -50 });
 
-      document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+      document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
 
       (function loop() {
-        rx += (mx - rx) * 0.12;
-        ry += (my - ry) * 0.12;
-        $cursor.style.left = mx + 'px';
-        $cursor.style.top = my + 'px';
-        $ring.style.left = rx + 'px';
-        $ring.style.top = ry + 'px';
+        const cursorEnabled = document.body.classList.contains('custom-cursor-enabled');
+        if (cursorEnabled) {
+          rx += (mx - rx) * 0.12;
+          ry += (my - ry) * 0.12;
+          gsap.set($cursor, { x: mx, y: my });
+          gsap.set($ring, { x: rx, y: ry });
+        }
         requestAnimationFrame(loop);
       })();
 
@@ -162,14 +169,19 @@
     const orbs = document.querySelectorAll('.gradient-orb');
 
     if (!isTouchDevice) {
+      const orbSetters = [...orbs].map((orb) => ({
+        xTo: gsap.quickTo(orb, 'x', { duration: 0.6, ease: 'power2.out' }),
+        yTo: gsap.quickTo(orb, 'y', { duration: 0.6, ease: 'power2.out' }),
+      }));
       document.addEventListener('mousemove', e => {
         const x = e.clientX / window.innerWidth - 0.5;
         const y = e.clientY / window.innerHeight - 0.5;
-        orbs.forEach((orb, i) => {
-          const spd = (i + 1) * 25;
-          gsap.to(orb, { x: x * spd, y: y * spd, duration: 1.2, ease: 'power2.out' });
+        orbSetters.forEach((setters, i) => {
+          const spd = (i + 1) * 22;
+          setters.xTo(x * spd);
+          setters.yTo(y * spd);
         });
-      });
+      }, { passive: true });
     }
 
     gsap.utils.toArray('.gradient-orb').forEach((orb, i) => {
@@ -244,10 +256,9 @@
 
     gsap.from('#about .about-theme-card p', {
       scrollTrigger: { trigger: '#about .about-theme-card', start: 'top 100%', end: 'top 62%', scrub: 1 },
-      y: 100,
-      scale: 0.94,
-      opacity: 0,
-      filter: 'blur(20px)',
+      y: 72,
+      scale: 0.98,
+      opacity: 0.1,
       stagger: 0.12,
     });
 
@@ -267,14 +278,12 @@
             rotateY: (phaseProblem ? -1 : 1) * twist,
             scale: phaseProblem ? 0.94 : 0.93,
             opacity: 0.08,
-            filter: phaseProblem ? 'blur(22px)' : 'blur(18px)',
           }, {
             x: 0,
             y: 0,
             rotateY: 0,
             scale: 1,
             opacity: 1,
-            filter: 'blur(0px)',
             ease: 'none',
             scrollTrigger: {
               trigger: row,
@@ -292,14 +301,12 @@
             rotateY: phaseProblem ? twist * -0.85 : twist * 0.85,
             scale: phaseProblem ? 0.84 : 0.86,
             opacity: 0.06,
-            clipPath: phaseProblem ? 'inset(0 12% 0 12% round 22px)' : 'inset(10% 0 10% 0 round 22px)',
           }, {
             x: 0,
             y: 0,
             rotateY: 0,
             scale: 1,
             opacity: 1,
-            clipPath: 'inset(0% 0% 0% 0% round 22px)',
             ease: 'none',
             scrollTrigger: {
               trigger: row,
@@ -333,15 +340,15 @@
       const sdgWrap = document.getElementById('sdgShowcase');
       if (sdgWrap) {
         gsap.fromTo(sdgWrap, {
-          clipPath: 'inset(10% 8% 10% 8% round 28px)',
           y: 80,
           opacity: 0.18,
-          rotateX: 8,
+          rotateX: 6,
+          scale: 0.985,
         }, {
-          clipPath: 'inset(0% 0% 0% 0% round 28px)',
           y: 0,
           opacity: 1,
           rotateX: 0,
+          scale: 1,
           ease: 'none',
           scrollTrigger: {
             trigger: sdgWrap,
@@ -381,13 +388,11 @@
           gsap.fromTo(pillar, {
             y: 68 + (i * 10),
             opacity: 0.1,
-            rotateY: i === 1 ? 0 : (i % 2 === 0 ? -18 : 18),
-            filter: 'blur(10px)',
+            rotateY: i === 1 ? 0 : (i % 2 === 0 ? -14 : 14),
           }, {
             y: 0,
             opacity: 1,
             rotateY: 0,
-            filter: 'blur(0px)',
             ease: 'none',
             scrollTrigger: {
               trigger: sdgWrap,
@@ -432,11 +437,12 @@
     });
 
     gsap.utils.toArray('.team-card').forEach((card, i) => {
-      let tl = gsap.timeline({
-        scrollTrigger: { trigger: card, start: 'top 95%', end: 'top 30%', scrub: 1 }
+      gsap.from(card, {
+        scrollTrigger: { trigger: card, start: 'top 92%', end: 'top 55%', scrub: 1 },
+        y: 64 + (i % 2) * 8,
+        opacity: 0.12,
+        scale: 0.96,
       });
-      tl.fromTo(card, { scale: 0.2, y: 100, opacity: 0 }, { scale: 1.08, y: -10, opacity: 1, duration: 0.75 })
-        .to(card, { scale: 1, y: 0, duration: 0.25 });
     });
 
     gsap.from('.media-card', {
