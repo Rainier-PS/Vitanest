@@ -263,6 +263,79 @@
     });
 
     if (!reduceMotion) {
+      const innovationGrid = document.getElementById('innovationGrid');
+      if (innovationGrid) {
+        gsap.utils.toArray('.innovation-card').forEach((card, i) => {
+          const fromLeft = i === 0;
+
+          gsap.fromTo(card, {
+            y: 56,
+            x: fromLeft ? -40 : 40,
+            opacity: 0.12,
+            rotateY: fromLeft ? 8 : -8,
+            scale: 0.98,
+          }, {
+            y: 0,
+            x: 0,
+            opacity: 1,
+            rotateY: 0,
+            scale: 1,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 94%',
+              end: 'top 58%',
+              scrub: 1.15,
+            },
+          });
+
+          const glow = card.querySelector('.innovation-glow');
+          if (glow) {
+            gsap.to(glow, {
+              x: fromLeft ? 18 : -16,
+              y: fromLeft ? -10 : 12,
+              scale: 1.1,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: card,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: 1.4,
+              },
+            });
+          }
+        });
+
+        gsap.from('.innovation-card .innovation-pane-icon', {
+          scrollTrigger: {
+            trigger: innovationGrid,
+            start: 'top 88%',
+            end: 'top 52%',
+            scrub: 1,
+          },
+          scale: 0.6,
+          rotate: -14,
+          opacity: 0,
+          stagger: 0.14,
+        });
+
+        gsap.from('.innovation-card .innovation-pane-body', {
+          scrollTrigger: {
+            trigger: innovationGrid,
+            start: 'top 84%',
+            end: 'top 48%',
+            scrub: 1,
+          },
+          y: 28,
+          opacity: 0.1,
+          stagger: 0.1,
+        });
+      }
+    } else {
+      gsap.set('#innovationGrid, .innovation-card, .innovation-glow', { clearProps: 'all' });
+    }
+
+    if (!reduceMotion) {
       document.querySelectorAll('.ps-motion').forEach((row, idx) => {
         const phaseProblem = row.classList.contains('ps-motion-problem');
         const copy = row.querySelector('.ps-copy');
