@@ -142,6 +142,7 @@ html {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -662,6 +663,10 @@ body::after {
   height: 14px;
 }
 
+.icon-sun {
+  display: none;
+}
+
 [data-theme="dark"] .icon-sun {
   display: none;
 }
@@ -701,6 +706,7 @@ body::after {
 }
 
 @media (max-width: 1024px) {
+
   #navbar,
   #navbar.scrolled {
     left: 50% !important;
@@ -740,6 +746,7 @@ body::after {
 }
 
 @media (max-width: 768px) {
+
   #navbar,
   #navbar.scrolled {
     top: 12px !important;
@@ -2717,7 +2724,9 @@ footer {
 }
 
 a:focus-visible,
-button:focus-visible {
+button:focus-visible,
+input:focus-visible,
+[tabindex]:focus-visible {
   outline: 2px solid var(--text);
   outline-offset: 3px;
   border-radius: 4px;

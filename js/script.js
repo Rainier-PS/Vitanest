@@ -115,11 +115,11 @@ function updateScrollbar() {
 
 window.addEventListener('scroll', () => {
   if (!ticking) {
-    requestAnimationFrame(() => { 
-      updateNavScrolled(); 
+    requestAnimationFrame(() => {
+      updateNavScrolled();
       activateLink();
       updateScrollbar();
-      ticking = false; 
+      ticking = false;
     });
     ticking = true;
   }
@@ -466,8 +466,8 @@ gsap.fromTo('.cta-box',
     scale: 1, y: 0, opacity: 1,
     duration: 0.8,
     ease: 'power3.out',
-    scrollTrigger: { 
-      trigger: '.cta-box', 
+    scrollTrigger: {
+      trigger: '.cta-box',
       start: 'top 85%'
     }
   }
@@ -626,11 +626,11 @@ if ($customScrollbar) {
     let y = e.clientY - rect.top;
     y = Math.max(0, Math.min(y, rect.height));
     const percentage = y / rect.height;
-    
+
     const docHeight = document.documentElement.scrollHeight;
     const winHeight = window.innerHeight;
     const maxScroll = docHeight - winHeight;
-    
+
     window.scrollTo(0, percentage * maxScroll);
   };
 
@@ -645,13 +645,13 @@ if ($customScrollbar) {
   };
 
   $customScrollbar.addEventListener('mousedown', (e) => {
-    if (window.innerWidth <= 768) return; 
+    if (window.innerWidth <= 768) return;
     isDraggingScrollbar = true;
     document.body.style.userSelect = 'none';
     $customScrollbar.classList.add('dragging');
-    
+
     onDrag(e);
-    
+
     document.addEventListener('mousemove', onDrag);
     document.addEventListener('mouseup', onStopDrag);
   });
