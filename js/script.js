@@ -9,8 +9,13 @@ gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 gsap.defaults({ overwrite: 'auto', force3D: true });
 ScrollTrigger.config({
   ignoreMobileResize: true,
-  autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load'
+  autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load,resize'
 });
+
+// Re-measure trigger positions once webfonts finish swapping in.
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => ScrollTrigger.refresh());
+}
 
 const storedCursor = localStorage.getItem('customCursor') === 'true';
 if (storedCursor) document.body.classList.add('custom-cursor-enabled');
@@ -172,28 +177,50 @@ tl.to('#heroLabel', { opacity: 1, y: 0, duration: 0.65 })
 
 const orbs = document.querySelectorAll('.gradient-orb');
 
-if (!isTouchDevice) {
-  const orbSetters = [...orbs].map((orb) => ({
+// Mouse parallax and scroll parallax share one writer per orb so two tweens
+// never fight over the same transform property (overwrite: 'auto' made them
+// kill each other, which caused jitter/freeze).
+if (!reduceMotion && orbs.length) {
+  const orbFx = [...orbs].map((orb, i) => ({
+    mouseScale: (i + 1) * 22,
+    scrollRange: i % 2 === 0 ? 180 : -180,
+    mx: 0, my: 0, sy: 0,
     xTo: gsap.quickTo(orb, 'x', { duration: 0.6, ease: 'power2.out' }),
     yTo: gsap.quickTo(orb, 'y', { duration: 0.6, ease: 'power2.out' }),
   }));
-  document.addEventListener('mousemove', e => {
-    const x = e.clientX / window.innerWidth - 0.5;
-    const y = e.clientY / window.innerHeight - 0.5;
-    orbSetters.forEach((setters, i) => {
-      const spd = (i + 1) * 22;
-      setters.xTo(x * spd);
-      setters.yTo(y * spd);
-    });
-  }, { passive: true });
-}
 
-gsap.utils.toArray('.gradient-orb').forEach((orb, i) => {
-  gsap.to(orb, {
-    y: i % 2 === 0 ? 180 : -180,
-    scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: 1 }
+  const applyOrb = (o) => {
+    o.xTo(o.mx);
+    o.yTo(o.my + o.sy);
+  };
+
+  const setOrbScroll = (progress) => {
+    orbFx.forEach((o) => {
+      o.sy = progress * o.scrollRange;
+      applyOrb(o);
+    });
+  };
+
+  if (!isTouchDevice) {
+    document.addEventListener('mousemove', e => {
+      const x = e.clientX / window.innerWidth - 0.5;
+      const y = e.clientY / window.innerHeight - 0.5;
+      orbFx.forEach((o) => {
+        o.mx = x * o.mouseScale;
+        o.my = y * o.mouseScale;
+        applyOrb(o);
+      });
+    }, { passive: true });
+  }
+
+  ScrollTrigger.create({
+    trigger: 'body',
+    start: 'top top',
+    end: 'bottom bottom',
+    onUpdate: (self) => setOrbScroll(self.progress),
+    onRefresh: (self) => setOrbScroll(self.progress),
   });
-});
+}
 
 function buildMarquee(id) {
   const track = document.getElementById(id);
@@ -262,23 +289,35 @@ function splitTextToSpans(selector) {
 
 splitTextToSpans('.section-title, .cta-title');
 
+// Explicit fromTo() everywhere for scrubbed reveals: gsap.from() lazily
+// captures its end values during ScrollTrigger's load-time refresh, and that
+// capture can end up storing the from-values, freezing elements mid-reveal.
 gsap.utils.toArray('.section-title, .cta-title').forEach(title => {
-  gsap.from(title.querySelectorAll('.char'), {
-    scrollTrigger: { trigger: title, start: 'top 88%', end: 'top 62%', scrub: 0.8 },
+  gsap.fromTo(title.querySelectorAll('.char'), {
     y: 60,
     opacity: 0,
     scale: 0.6,
     rotationX: -80,
+  }, {
+    scrollTrigger: { trigger: title, start: 'top 88%', end: 'top 62%', scrub: 0.8 },
+    y: 0,
+    opacity: 1,
+    scale: 1,
+    rotationX: 0,
     stagger: 0.04,
     ease: 'back.out(1.5)'
   });
 });
 
-gsap.from('#about .about-theme-card p', {
-  scrollTrigger: { trigger: '#about .about-theme-card', start: 'top 90%', end: 'top 55%', scrub: 0.8 },
+gsap.fromTo('#about .about-theme-card p', {
   y: 60,
   scale: 0.98,
   opacity: 0.1,
+}, {
+  scrollTrigger: { trigger: '#about .about-theme-card', start: 'top 90%', end: 'top 55%', scrub: 0.8 },
+  y: 0,
+  scale: 1,
+  opacity: 1,
   stagger: 0.1,
 });
 
@@ -310,14 +349,18 @@ if (!reduceMotion) {
       }
     });
 
-    gsap.from('.innovation-card .innovation-pane-icon', {
+    gsap.fromTo('.innovation-card .innovation-pane-icon', {
+      scale: 0.6, rotate: -14, opacity: 0,
+    }, {
       scrollTrigger: { trigger: innovationGrid, start: 'top 84%', end: 'top 50%', scrub: 0.8 },
-      scale: 0.6, rotate: -14, opacity: 0, stagger: 0.12,
+      scale: 1, rotate: 0, opacity: 1, stagger: 0.12,
     });
 
-    gsap.from('.innovation-card .innovation-pane-body', {
+    gsap.fromTo('.innovation-card .innovation-pane-body', {
+      y: 24, opacity: 0.1,
+    }, {
       scrollTrigger: { trigger: innovationGrid, start: 'top 80%', end: 'top 44%', scrub: 0.8 },
-      y: 24, opacity: 0.1, stagger: 0.08,
+      y: 0, opacity: 1, stagger: 0.08,
     });
   }
 } else {
@@ -413,14 +456,18 @@ if (!reduceMotion) {
   gsap.set('.sdg-showcase, .sdg-pillar', { clearProps: 'all' });
 }
 
-gsap.from('.accordion-item', {
+gsap.fromTo('.accordion-item', {
+  x: 90, opacity: 0,
+}, {
   scrollTrigger: { trigger: '#ecoAccordion', start: 'top 95%', end: 'top 48%', scrub: 0.8 },
-  x: 90, opacity: 0, stagger: 0.08
+  x: 0, opacity: 1, stagger: 0.08
 });
 
-gsap.from('#ecoPreview', {
-  scrollTrigger: { trigger: '#ecoPreview', start: 'top 90%', end: 'top 46%', scrub: 0.8 },
+gsap.fromTo('#ecoPreview', {
   scale: 0.55, opacity: 0, rotationY: 40
+}, {
+  scrollTrigger: { trigger: '#ecoPreview', start: 'top 90%', end: 'top 46%', scrub: 0.8 },
+  scale: 1, opacity: 1, rotationY: 0
 });
 
 gsap.to('#timelineProgress', {
@@ -429,9 +476,11 @@ gsap.to('#timelineProgress', {
 });
 
 gsap.utils.toArray('.timeline-item').forEach((item, i) => {
-  gsap.from(item, {
-    scrollTrigger: { trigger: item, start: 'top 92%', end: 'top 58%', scrub: 0.8 },
+  gsap.fromTo(item, {
     x: i % 2 === 0 ? -90 : 90, opacity: 0
+  }, {
+    scrollTrigger: { trigger: item, start: 'top 92%', end: 'top 58%', scrub: 0.8 },
+    x: 0, opacity: 1
   });
 
   gsap.to(item.querySelector('.timeline-marker'), {
@@ -440,23 +489,31 @@ gsap.utils.toArray('.timeline-item').forEach((item, i) => {
 });
 
 gsap.utils.toArray('.team-card').forEach((card, i) => {
-  gsap.from(card, {
-    scrollTrigger: { trigger: card, start: 'top 90%', end: 'top 52%', scrub: 0.8 },
+  gsap.fromTo(card, {
     y: 56 + (i % 2) * 6,
     opacity: 0,
     scale: 0.96,
+  }, {
+    scrollTrigger: { trigger: card, start: 'top 90%', end: 'top 52%', scrub: 0.8 },
+    y: 0,
+    opacity: 1,
+    scale: 1,
   });
 });
 
-gsap.from('.media-card', {
+gsap.fromTo('.media-card', {
+  y: 80, scale: 0.82, opacity: 0
+}, {
   scrollTrigger: { trigger: '.media-grid', start: 'top 95%', end: 'top 48%', scrub: 0.8 },
-  y: 80, scale: 0.82, opacity: 0, stagger: 0.15
+  y: 0, scale: 1, opacity: 1, stagger: 0.15
 });
 
 gsap.utils.toArray('.section-label, .section-sub').forEach(el => {
-  gsap.from(el, {
-    scrollTrigger: { trigger: el, start: 'top 95%', end: 'top 65%', scrub: 0.8 },
+  gsap.fromTo(el, {
     y: 32, opacity: 0
+  }, {
+    scrollTrigger: { trigger: el, start: 'top 95%', end: 'top 65%', scrub: 0.8 },
+    y: 0, opacity: 1
   });
 });
 
@@ -506,8 +563,19 @@ const updateFirstAcc = () => {
   const activeObj = document.querySelector('.accordion-item.active .accordion-content');
   if (activeObj) activeObj.style.maxHeight = activeObj.scrollHeight + "px";
 };
-window.addEventListener('load', updateFirstAcc);
-window.addEventListener('resize', updateFirstAcc);
+// Expanding the accordion on load shifts everything below it, so re-measure
+// trigger positions afterwards (ScrollTrigger's own load refresh runs first).
+window.addEventListener('load', () => {
+  updateFirstAcc();
+  ScrollTrigger.refresh();
+});
+
+let accResizeTimer;
+window.addEventListener('resize', () => {
+  updateFirstAcc();
+  clearTimeout(accResizeTimer);
+  accResizeTimer = setTimeout(() => ScrollTrigger.refresh(), 200);
+});
 
 gsap.to('#about .about-text', {
   y: -40,
